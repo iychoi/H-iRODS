@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -325,5 +327,16 @@ public class IrodsHdfsFileSystem extends FileSystem {
         private static long findBlocksize() {
             return DEFAULT_IRODS_BLOCKSIZE;
         }
+    }
+    
+    @Override
+    public void close() throws IOException {
+        try {
+            this.irodsFS.close();
+        } catch (JargonException ex) {
+            throw new IOException("Cannot close iRODS fs");
+        }
+        
+        super.close();
     }
 }
