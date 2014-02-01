@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+	<property>
+		<name>fs.default.name</name>
+		<value>hdfs://$MASTER_HOSTNAME:9000</value>
+	</property>
+	<property>
+		<name>hadoop.tmp.dir</name>
+		<value>$HADOOP_TEMP_DIR</value>
+	</property>
+	<property>
+		<name>fs.irods.impl</name>
+		<value>edu.arizona.cs.irods_hdfs.hadoop.hdfs.IrodsHdfsFileSystem</value>
+		<description>The FileSystem for irods: uris.</description>
+	</property>
+    <property>
+		<name>irods.host</name>
+		<value>data.iplantcollaborative.org</value>
+	</property>
+    <property>
+		<name>irods.port</name>
+		<value>1247</value>
+	</property>
+    <property>
+		<name>irods.zone</name>
+		<value>iplant</value>
+	</property>
+    <property>
+		<name>irods.account.username</name>
+		<value>USERNAME_HERE</value>
+	</property>
+    <property>
+		<name>irods.account.password</name>
+		<value>USERPASSWORD_HERE</value>
+	</property>
+    <property>
+		<name>irods.account.homedir</name>
+		<value>/iplant/home/USERNAME_HERE</value>
+	</property>
+	<!-- buffer size : 128KB -->
+	<!--
+	<property>
+		<name>io.file.buffer.size</name>
+		<value>131072</value>
+	</property>
+	-->
+</configuration>
