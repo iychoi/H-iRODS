@@ -1,6 +1,8 @@
 package org.apache.hadoop.fs.irods;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -13,6 +15,8 @@ import org.irods.jargon.core.pub.io.IRODSRandomAccessFile;
 
 public class IrodsHdfsInputStream extends FSInputStream {
 
+    private static final Log LOG = LogFactory.getLog(IrodsHdfsInputStream.class);
+    
     private IRODSFile path;
     private IRODSFileSystem irodsFS;
     private IRODSFileFactory fileFactory;
@@ -29,9 +33,9 @@ public class IrodsHdfsInputStream extends FSInputStream {
         this.stats = stats;
         this.fileLength = path.length();
         try {
-            this.raf = this.fileFactory.instanceIRODSRandomAccessFile(path);
+            this.raf = this.fileFactory.instanceIRODSRandomAccessFile(path.getAbsolutePath());
         } catch (JargonException ex) {
-            throw new IOException("Cannot open Input Stream for file (" + path.getPath() + ")");
+            throw new IOException(ex);
         }
     }
     

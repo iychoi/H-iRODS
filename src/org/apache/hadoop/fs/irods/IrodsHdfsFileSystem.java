@@ -50,7 +50,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
             try {
                 this.irodsFS = IRODSFileSystem.instance();
             } catch (JargonException ex) {
-                throw new IOException("Cannot initialize IRODSFileSystem");
+                throw new IOException(ex);
             }
             this.irodsAccount = createIRODSAccount(conf);
             
@@ -58,9 +58,10 @@ public class IrodsHdfsFileSystem extends FileSystem {
             try {
                 response = connectIRODS(this.irodsFS, this.irodsAccount);
             } catch (AuthenticationException ex) {
-                throw new IOException("Cannot authenticate to IRODS");
+                LOG.error(ex);
+                throw new IOException(ex);
             } catch (JargonException ex) {
-                throw new IOException("Cannot connect to IRODS");
+                throw new IOException(ex);
             }
             
             if(!response.isSuccessful()) {
@@ -69,7 +70,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
             try {
                 this.irodsFileFactory = getIRODSFileFactory(this.irodsFS, this.irodsAccount);
             } catch (JargonException ex) {
-                throw new IOException("Cannot get IRODS File Factory");
+                throw new IOException(ex);
             }
         }
         setConf(conf);
@@ -144,7 +145,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
         try {
             return this.irodsFileFactory.instanceIRODSFile(path.getPath(), name);
         } catch (JargonException ex) {
-            throw new IOException("Cannot make IRODSFile from path (" + path.toString() + ", " + name + ")");
+            throw new IOException(ex);
         }
     }
     
@@ -157,7 +158,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
             
             return this.irodsFileFactory.instanceIRODSFile(path);
         } catch (JargonException ex) {
-            throw new IOException("Cannot make IRODSFile from path (" + uri + ")");
+            throw new IOException(ex);
         }
     }
     
@@ -222,7 +223,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
         } catch (NoResourceDefinedException ex) {
             throw new IOException("Cannot get output stream from " + file);
         } catch (JargonException ex) {
-            throw new IOException("Cannot get output stream from " + file);
+            throw new IOException(ex);
         }
     }
     
@@ -349,7 +350,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
         try {
             this.irodsFS.close();
         } catch (JargonException ex) {
-            throw new IOException("Cannot close iRODS fs");
+            throw new IOException(ex);
         }
         
         super.close();
