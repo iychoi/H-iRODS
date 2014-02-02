@@ -327,7 +327,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
     
     private static class IrodsFileStatus extends FileStatus {
 
-        public static final long DEFAULT_IRODS_BLOCKSIZE = 1024*1024;
+        public static final long DEFAULT_IRODS_BLOCKSIZE = 64*1024*1024; // 64MB
         
         IrodsFileStatus(Path f, IRODSFile ifile) throws IOException {
             super(findLength(ifile), ifile.isDirectory(), 1, findBlocksize(), 0, f);
