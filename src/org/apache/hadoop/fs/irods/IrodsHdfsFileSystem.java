@@ -52,7 +52,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
             } catch (JargonException ex) {
                 throw new IOException(ex);
             }
-            this.irodsAccount = createIRODSAccount(conf);
+            this.irodsAccount = createIRODSAccount(uri, conf);
             
             AuthResponse response;
             try {
@@ -78,7 +78,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
         this.workingDir = new Path(this.irodsAccount.getHomeDirectory()).makeQualified(this);
     }
     
-    private static IRODSAccount createIRODSAccount(Configuration conf) throws IOException {
+    private static IRODSAccount createIRODSAccount(URI uri, Configuration conf) throws IOException {
         IRODSAccount account = null;
         
         try {
@@ -90,6 +90,29 @@ public class IrodsHdfsFileSystem extends FileSystem {
             String home = IrodsHdfsConfigUtil.getIrodsHomeDirectory(conf);
             String resource = IrodsHdfsConfigUtil.getIrodsDefaultStorageResource(conf);
             
+            if(uri != null) {
+                String urihost = uri.getHost();
+                if(urihost != null && !urihost.isEmpty()) {
+                    host = urihost;
+                }
+
+                int uriport = uri.getPort();
+                if(uriport > 0) {
+                    port = uriport;
+                }
+
+                String uriuserinfo = uri.getUserInfo();
+                if(uriuserinfo != null && !uriuserinfo.isEmpty()) {
+                    int i = uriuserinfo.indexOf(':');
+                    if (i >= 0) {
+                        user = uriuserinfo.substring(0,i);
+                        password = uriuserinfo.substring(i+1);
+                    } else {
+                        user = uriuserinfo;
+                    }
+                }
+            }
+
             account = IRODSAccount.instance(host, port, user, password, home, zone, resource);
             
             //LOG.info("IRODS Account Info - host : " + host);
