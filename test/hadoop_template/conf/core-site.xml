@@ -14,32 +14,32 @@
 	</property>
 	<property>
 		<name>fs.irods.impl</name>
-		<value>edu.arizona.cs.irods_hdfs.hadoop.hdfs.IrodsHdfsFileSystem</value>
+		<value>org.apache.hadoop.fs.irods.IrodsHdfsFileSystem</value>
 		<description>The FileSystem for irods: uris.</description>
 	</property>
-    <property>
-		<name>irods.host</name>
+	<property>
+		<name>fs.irods.host</name>
 		<value>data.iplantcollaborative.org</value>
 	</property>
-    <property>
-		<name>irods.port</name>
+	<property>
+		<name>fs.irods.port</name>
 		<value>1247</value>
 	</property>
-    <property>
-		<name>irods.zone</name>
+	<property>
+		<name>fs.irods.zone</name>
 		<value>iplant</value>
 	</property>
-    <property>
-		<name>irods.account.username</name>
-		<value>USERNAME_HERE</value>
+	<property>
+		<name>fs.irods.account.username</name>
+		<value>ID_HERE</value>
 	</property>
-    <property>
-		<name>irods.account.password</name>
-		<value>USERPASSWORD_HERE</value>
+	<property>
+		<name>fs.irods.account.password</name>
+		<value>PASSWORD_HERE</value>
 	</property>
-    <property>
-		<name>irods.account.homedir</name>
-		<value>/iplant/home/USERNAME_HERE</value>
+	<property>
+		<name>fs.irods.account.homedir</name>
+		<value>/iplant/home/ID_HERE</value>
 	</property>
 	<!-- buffer size : 128KB -->
 	<!--

@@ -1,0 +1,125 @@
+package org.apache.hadoop.fs.irods;
+
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.pub.IRODSFileSystem;
+import org.irods.jargon.core.pub.io.FileIOOperations.SeekWhenceType;
+import org.irods.jargon.core.pub.io.IRODSFile;
+import org.irods.jargon.core.pub.io.IRODSFileFactory;
+import org.irods.jargon.core.pub.io.IRODSRandomAccessFile;
+
+public class IrodsHdfsInputStream extends FSInputStream {
+
+    private IRODSFile path;
+    private IRODSFileSystem irodsFS;
+    private IRODSFileFactory fileFactory;
+    private FileSystem.Statistics stats;
+    private boolean closed;
+    private long fileLength;
+    private long pos = 0;
+    private IRODSRandomAccessFile raf;
+    
+    public IrodsHdfsInputStream(Configuration conf, IRODSFile path, IRODSFileSystem irodsFS, IRODSFileFactory fileFactory, FileSystem.Statistics stats) throws IOException {
+        this.path = path;
+        this.irodsFS = irodsFS;
+        this.fileFactory = fileFactory;
+        this.stats = stats;
+        this.fileLength = path.length();
+        try {
+            this.raf = this.fileFactory.instanceIRODSRandomAccessFile(path);
+        } catch (JargonException ex) {
+            throw new IOException("Cannot open Input Stream for file (" + path.getPath() + ")");
+        }
+    }
+    
+    @Override
+    public synchronized long getPos() throws IOException {
+        return this.pos;
+    }
+
+    @Override
+    public synchronized int available() throws IOException {
+        return (int) (this.fileLength - this.pos);
+    }
+    
+    @Override
+    public synchronized void seek(long targetPos) throws IOException {
+        if (targetPos > this.fileLength) {
+            throw new IOException("Cannot seek after EOF");
+        }
+        this.pos = targetPos;
+        this.raf.seek(targetPos, SeekWhenceType.SEEK_START);
+    }
+
+    @Override
+    public synchronized boolean seekToNewSource(long targetPos) throws IOException {
+        return false;
+    }
+    
+    @Override
+    public synchronized int read() throws IOException {
+        if (this.closed) {
+            throw new IOException("Stream closed");
+        }
+        int result = -1;
+        if (this.pos < this.fileLength) {
+            result = this.raf.read();
+            if (result >= 0) {
+                this.pos++;
+            }
+        }
+        if (this.stats != null & result >= 0) {
+            this.stats.incrementBytesRead(1);
+        }
+        return result;
+    }
+    
+    @Override
+    public int read(byte[] bytes, int off, int len) throws IOException {
+        if (this.closed) {
+            throw new IOException("Stream closed");
+        }
+        if (this.pos < this.fileLength) {
+            int result = this.raf.read(bytes, off, len);
+            if (result >= 0) {
+                this.pos += result;
+            }
+            if (this.stats != null && result > 0) {
+                this.stats.incrementBytesRead(result);
+            }
+            return result;
+        }
+        return -1;
+    }
+    
+    @Override
+    public void close() throws IOException {
+        if (this.closed) {
+            return;
+        }
+        if (this.raf != null) {
+            this.raf.close();
+            this.raf = null;
+        }
+        super.close();
+        this.closed = true;
+    }
+    
+    @Override
+    public boolean markSupported() {
+        return false;
+    }
+
+    @Override
+    public void mark(int readLimit) {
+        // Do nothing
+    }
+
+    @Override
+    public void reset() throws IOException {
+        throw new IOException("Mark not supported");
+    }
+}

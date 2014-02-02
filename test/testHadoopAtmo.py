@@ -184,25 +184,43 @@ def prepareHadoopConfigFiles():
             subprocess.call("sed -i 's/$HADOOP_NAME_DIR/" + hadoop_name_dir + "/g' " + abspath, shell=True)
             subprocess.call("sed -i 's/$HADOOP_DATA_DIR/" + hadoop_data_dir + "/g' " + abspath, shell=True)
 
-def setupHadoop(host, sconn, userid, userpwd):
+def prepareProjectLibraries():
+    print "preparing hadoop libraries"
+
+    subprocess.call("cd ..;ant", shell=True)
+
+    abslibpath = os.path.realpath("../dist/iRODS-HDFS.jar")
+    shutil.copy(abslibpath, g_hadoopConfigTemplateDir + "/lib")
+
+    abspath = os.path.realpath(g_hadoopConfigTempDir)
+    if os.path.exists(abspath):
+        shutil.rmtree(abspath)
+
+    abstemplatepath = os.path.realpath(g_hadoopConfigTemplateDir)
+    shutil.copytree(abstemplatepath, abspath)
+
+def setupHadoopCluster(host, sconn, userid, userpwd):
     # check hostname
     setHostname(host, sconn, userpwd)
 
     # change path to home
     sconn.execute("cd ~")    
 
-    """
     # copy hadoop package
     realHadoopPath = os.path.realpath(g_temp_dir + "/" + g_hadoopFileName)
     copyRemoteFile(sconn, realHadoopPath, "/home/" + userid + "/" + g_hadoopFileName)
-    """
+
+    hadoopPath = os.path.splitext(os.path.splitext(g_hadoopFileName)[0])[0]
+
+    # remove previous hadoop dir
+    sconn.execute("rm -rf hadoop")
+    sconn.execute("rm -rf " + hadoopPath)
 
     # uncompress package
     print "uncompressing " + g_hadoopFileName
     sconn.execute("tar zxvf " + g_hadoopFileName)
 
     # make symbolic link
-    hadoopPath = os.path.splitext(os.path.splitext(g_hadoopFileName)[0])[0]
     sconn.execute("ln -sf " + hadoopPath + " hadoop")
     
     # make hadoopfs dir
@@ -210,7 +228,23 @@ def setupHadoop(host, sconn, userid, userpwd):
 
     # copy hadoop configs
     print "copying hadoop configurations"
-    for root, dirs, files in os.walk(g_hadoopConfigTempDir, topdown=True):
+    for root, dirs, files in os.walk(g_hadoopConfigTempDir + "/conf", topdown=True):
+        for name in files:
+            print "copying " + os.path.join(root, name)
+            entry = os.path.join(root, name)
+            copyRemoteFile(sconn, os.path.realpath(entry), "/home/" + userid + "/" + entry, True)
+
+    # listing
+    msg = sconn.execute("ls -al")
+    printSSHmsg(msg)
+
+def setupHadoopClusterProjects(sconn, userid):
+    # change path to home
+    sconn.execute("cd ~")    
+
+    # copy project libraries
+    print "copying dependent libraries"
+    for root, dirs, files in os.walk(g_hadoopConfigTempDir + "/lib", topdown=True):
         for name in files:
             print "copying " + os.path.join(root, name)
             entry = os.path.join(root, name)
@@ -220,7 +254,7 @@ def setupHadoop(host, sconn, userid, userpwd):
     msg = sconn.execute("ls -al")
     printSSHmsg(msg)
 
-def setup():
+def setupHadoop():
     # prepare temp directory
     realTempPath = os.path.realpath(g_temp_dir)
     if not os.path.exists(realTempPath):
@@ -228,7 +262,7 @@ def setup():
 
     # prepare hadoop package
     subprocess.call("wget -P " + realTempPath +" -c " + g_hadoopDownloadPath, shell=True)
-
+    
     # prepare hadoop configuration file
     prepareHadoopConfigFiles()
     
@@ -237,13 +271,33 @@ def setup():
         print host
         print "============================="
         sconn = openSSHConn(host, g_userid, g_userpwd)
-        setupHadoop(host, sconn, g_userid, g_userpwd)
+        setupHadoopCluster(host, sconn, g_userid, g_userpwd)
         closeSSHConn(sconn)
+
+def setupProject():
+    # prepare temp directory
+    realTempPath = os.path.realpath(g_temp_dir)
+    if not os.path.exists(realTempPath):
+        os.makedirs(realTempPath)
+
+    # prepare project libraries
+    prepareProjectLibraries()
+
+    for host in g_hosts:
+        print "============================="
+        print host
+        print "============================="
+        sconn = openSSHConn(host, g_userid, g_userpwd)
+        setupHadoopClusterProjects(sconn, g_userid)
+        closeSSHConn(sconn)
+
 
 def main():
     if len(sys.argv) < 2:
         print "command : ./testHadoopAtmo.py config"
         print "command : ./testHadoopAtmo.py cfgview"
+        print "command : ./testHadoopAtmo.py setup_hadoop"
+        print "command : ./testHadoopAtmo.py setup_project"
     else:
         command = sys.argv[1]
 
@@ -253,8 +307,10 @@ def main():
             config()
         elif command == "cfgview":
             viewConfig()
-        elif command == "setup":
-            setup()
+        elif command == "setup_hadoop":
+            setupHadoop()
+        elif command == "setup_project":
+            setupProject()
         else:
             print "invalid command"
 
