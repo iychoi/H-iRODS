@@ -42,16 +42,14 @@ Register iRODS-HDFS to Hadoop configuration. We need to modify "core-site.xml" f
 	</property>
 ```
 
-Restart the hadoop system then you could use "irods://path/to/your/resources" like path.
+Restart the hadoop system then you could use "irods://irods_host/path/to/your/resources" like path.
 
 Dependencies
 ------------
 
 iRODS-HDFS uses [Jargon](https://www.irods.org/index.php/Jargon) library to connect to iRODS system.
-Following libraries are using now in iRODS-HDFS.
+Following library is used in iRODS-HDFS.
 - jargon-core-3.3.2-20140124.145551-44.jar
-- jargon-transfer-engine-3.3.2-20140124.145551-43.jar
-- jargon-transfer-dao-spring-3.3.2-20140124.145551-43.jar
 
 
 Building
