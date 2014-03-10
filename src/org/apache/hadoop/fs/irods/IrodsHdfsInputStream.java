@@ -32,6 +32,10 @@ public class IrodsHdfsInputStream extends FSInputStream {
         this.fileFactory = fileFactory;
         this.stats = stats;
         this.fileLength = path.length();
+        this.pos = 0;
+        
+        //LOG.info("FileLength : " + fileLength);
+
         try {
             this.raf = this.fileFactory.instanceIRODSRandomAccessFile(path.getAbsolutePath());
         } catch (JargonException ex) {
@@ -68,16 +72,28 @@ public class IrodsHdfsInputStream extends FSInputStream {
         if (this.closed) {
             throw new IOException("Stream closed");
         }
+        //LOG.info("pos : " + this.pos + " / " + this.fileLength);
+        
         int result = -1;
         if (this.pos < this.fileLength) {
-            result = this.raf.read();
-            if (result >= 0) {
-                this.pos++;
+            byte[] bytes = new byte[1];
+            result = this.raf.read(bytes, 0, 1);
+            //LOG.info("read results : " + result);
+            if (result > 0) {
+                this.pos += result;
+                result = ((int)bytes[0] & 0xff);
             }
+            
+            //result = this.raf.read();
+            //if (result >= 0) {
+            //    this.pos++;
+            //}
         }
         if (this.stats != null & result >= 0) {
             this.stats.incrementBytesRead(1);
         }
+        
+        //LOG.info("read : " + result);
         return result;
     }
     
@@ -87,7 +103,9 @@ public class IrodsHdfsInputStream extends FSInputStream {
             throw new IOException("Stream closed");
         }
         if (this.pos < this.fileLength) {
-            int result = this.raf.read(bytes, off, len);
+            int readLen = (int)Math.min(this.fileLength - this.pos, len);
+            
+            int result = this.raf.read(bytes, off, readLen);
             if (result >= 0) {
                 this.pos += result;
             }
@@ -96,6 +114,7 @@ public class IrodsHdfsInputStream extends FSInputStream {
             }
             return result;
         }
+        
         return -1;
     }
     
