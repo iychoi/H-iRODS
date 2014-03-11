@@ -260,7 +260,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
             throw new IOException("Path " + path + " is a directory.");
         }
         
-        return new FSDataInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics));
+        return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics), getConf()));
     }
 
     @Override
