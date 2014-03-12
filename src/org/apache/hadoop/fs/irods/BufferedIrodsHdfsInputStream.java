@@ -11,8 +11,6 @@ public class BufferedIrodsHdfsInputStream extends FSInputStream {
     
     private static final Log LOG = LogFactory.getLog(BufferedIrodsHdfsInputStream.class);
     
-    public static final int DEFAULT_BUFFER_SIZE = 100 * 1024;
-    
     private byte[] buffer;
     private int buffer_end = 0;
     private int buffer_pos = 0;
@@ -21,12 +19,7 @@ public class BufferedIrodsHdfsInputStream extends FSInputStream {
     private IrodsHdfsInputStream is;
     
     public BufferedIrodsHdfsInputStream(IrodsHdfsInputStream is) throws IOException {
-        init(is, DEFAULT_BUFFER_SIZE);
-    }
-    
-    public BufferedIrodsHdfsInputStream(IrodsHdfsInputStream is, Configuration conf) throws IOException {
-        int size = IrodsHdfsConfigUtil.getIrodsInputBufferSize(conf);
-        init(is, size);
+        init(is, IrodsHdfsConfigUtil.DEFAULT_BUFFER_SIZE);
     }
     
     public BufferedIrodsHdfsInputStream(IrodsHdfsInputStream is, int buffer_size) throws IOException {

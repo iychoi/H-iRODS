@@ -3,7 +3,6 @@ package org.apache.hadoop.fs.irods.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.irods.BufferedIrodsHdfsInputStream;
 
 public class IrodsHdfsConfigUtil {
     
@@ -17,8 +16,10 @@ public class IrodsHdfsConfigUtil {
     public static final String CONFIG_IRODS_HOME_DIRECTORY = "fs.irods.account.homedir";
     public static final String CONFIG_IRODS_DEFAULT_STORAGE_RESOURCE = "fs.irods.account.resource";
     public static final String CONFIG_IRODS_DEFAULT_INPUT_BUFFER_SIZE = "fs.irods.input.buffer.size";
+    public static final String CONFIG_IRODS_DEFAULT_OUTPUT_BUFFER_SIZE = "fs.irods.output.buffer.size";
     
     public static final int IRODS_PORT_DEFAULT = 1247;
+    public static final int DEFAULT_BUFFER_SIZE = 100 * 1024;
     
     public static String getIrodsHost(Configuration conf) {
         return conf.get(CONFIG_IRODS_HOST);
@@ -85,10 +86,18 @@ public class IrodsHdfsConfigUtil {
     }
     
     public static int getIrodsInputBufferSize(Configuration conf) {
-        return conf.getInt(CONFIG_IRODS_DEFAULT_INPUT_BUFFER_SIZE, BufferedIrodsHdfsInputStream.DEFAULT_BUFFER_SIZE);
+        return conf.getInt(CONFIG_IRODS_DEFAULT_INPUT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
     }
     
     public static void setIrodsInputBufferSize(Configuration conf, int buffer_size) {
         conf.setInt(CONFIG_IRODS_DEFAULT_INPUT_BUFFER_SIZE, buffer_size);
+    }
+    
+    public static int getIrodsOutputBufferSize(Configuration conf) {
+        return conf.getInt(CONFIG_IRODS_DEFAULT_OUTPUT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
+    }
+    
+    public static void setIrodsOutputBufferSize(Configuration conf, int buffer_size) {
+        conf.setInt(CONFIG_IRODS_DEFAULT_OUTPUT_BUFFER_SIZE, buffer_size);
     }
 }

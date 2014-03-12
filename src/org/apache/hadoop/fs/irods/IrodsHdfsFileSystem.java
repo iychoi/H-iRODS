@@ -1,5 +1,6 @@
 package org.apache.hadoop.fs.irods;
 
+import java.io.BufferedOutputStream;
 import org.apache.hadoop.fs.irods.util.IrodsHdfsConfigUtil;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -242,7 +243,8 @@ public class IrodsHdfsFileSystem extends FileSystem {
             }
         }
         try {
-            return new FSDataOutputStream(this.irodsFileFactory.instanceIRODSFileOutputStream(ipath));
+            int bSize = Math.max(IrodsHdfsConfigUtil.getIrodsOutputBufferSize(getConf()), bufferSize);
+            return new FSDataOutputStream(new BufferedOutputStream(this.irodsFileFactory.instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
         } catch (NoResourceDefinedException ex) {
             throw new IOException("Cannot get output stream from " + file);
         } catch (JargonException ex) {
@@ -260,7 +262,8 @@ public class IrodsHdfsFileSystem extends FileSystem {
             throw new IOException("Path " + path + " is a directory.");
         }
         
-        return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics), getConf()));
+        int bSize = Math.max(IrodsHdfsConfigUtil.getIrodsOutputBufferSize(getConf()), bufferSize);
+        return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics), bSize));
     }
 
     @Override
