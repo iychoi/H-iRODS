@@ -43,10 +43,23 @@ public class BufferedIrodsHdfsInputStream extends FSInputStream {
     }
     
     private int fillBuffer(long startOffset) throws IOException {
+        this.is.seek(startOffset);
         this.buffer_start_pos = startOffset;
         this.buffer_pos = 0;
-        this.buffer_end = this.is.read(startOffset, this.buffer, 0, this.buffer_size);
-        return this.buffer_end;
+        this.buffer_end = 0;
+
+        int retval = this.is.read(this.buffer, 0, this.buffer_size);
+        if(retval >= 0) {
+            this.buffer_end = retval;
+        }
+        
+        return retval;
+    }
+    
+    @Override
+    public long skip(long l) throws IOException {
+        seek(this.buffer_start_pos + this.buffer_pos + l);
+        return l;
     }
     
     @Override
@@ -61,31 +74,36 @@ public class BufferedIrodsHdfsInputStream extends FSInputStream {
     
     @Override
     public synchronized void seek(long targetPos) throws IOException {
-        this.is.seek(targetPos);
-        
-        this.buffer_start_pos = this.is.getPos();
-        this.buffer_pos = 0;
-        this.buffer_end = 0;
+        if(targetPos >= this.buffer_start_pos && targetPos < this.buffer_start_pos + this.buffer_end) {
+            this.buffer_pos = (int) (targetPos - this.buffer_start_pos);
+        } else {
+            this.is.seek(targetPos);
+
+            this.buffer_start_pos = targetPos;
+            this.buffer_pos = 0;
+            this.buffer_end = 0;
+        }
     }
     
     @Override
     public synchronized boolean seekToNewSource(long targetPos) throws IOException {
-        return this.is.seekToNewSource(targetPos);
+        return false;
     }
     
     @Override
     public synchronized int read() throws IOException {
         if(this.buffer_end - this.buffer_pos > 0) {
-            int value = (this.buffer[this.buffer_pos] & 0xff);
+            int value = ((int)this.buffer[this.buffer_pos] & 0xff);
             this.buffer_pos++;
             return value;
         } else {
-            if(fillBuffer(this.buffer_start_pos + this.buffer_end) <= 0) {
+            int ret = fillBuffer(this.buffer_start_pos + this.buffer_end);
+            if(ret <= 0) {
                 // eof
-                return -1;
+                return ret;
             }
             
-            int value = (this.buffer[this.buffer_pos] & 0xff);
+            int value = ((int) this.buffer[this.buffer_pos] & 0xff);
             this.buffer_pos++;
             return value;
         }
@@ -93,30 +111,34 @@ public class BufferedIrodsHdfsInputStream extends FSInputStream {
     
     @Override
     public int read(byte[] bytes, int off, int len) throws IOException {
-        if(len < (this.buffer_end - this.buffer_pos)) {
+        if(len <= (this.buffer_end - this.buffer_pos)) {
             System.arraycopy(this.buffer, this.buffer_pos, bytes, off, len);
             this.buffer_pos += len;
             return len;
-        }
-        
-        if(this.buffer_end - this.buffer_pos > 0) {
-            // has buffer
-            int cur_buff_size = buffer_end - this.buffer_pos;
-            System.arraycopy(this.buffer, this.buffer_pos, bytes, off, cur_buff_size);
-            this.buffer_pos += cur_buff_size;
-            
-            int result = this.is.read(bytes, off + cur_buff_size, len - cur_buff_size);
-            this.buffer_start_pos += result;
-            this.buffer_pos = 0;
-            this.buffer_end = 0;
-            return result;
         } else {
-            // no buffer
-            int result = this.is.read(bytes, off, len);
-            this.buffer_start_pos += result;
-            this.buffer_pos = 0;
-            this.buffer_end = 0;
-            return result;
+            if (this.buffer_end - this.buffer_pos > 0) {
+                // has buffer
+                int cur_buff_size = this.buffer_end - this.buffer_pos;
+                System.arraycopy(this.buffer, this.buffer_pos, bytes, off, cur_buff_size);
+                this.buffer_pos += cur_buff_size;
+                // toss to next iteration
+                return cur_buff_size;
+            } else {
+                // no buffer
+                int ret = fillBuffer(this.buffer_start_pos + this.buffer_end);
+                if (ret <= 0) {
+                    // eof
+                    return ret;
+                }
+                
+                int cur_buff_size = this.buffer_end - this.buffer_pos;
+                int min_read = Math.min(cur_buff_size, len);
+                
+                System.arraycopy(this.buffer, this.buffer_pos, bytes, off, min_read);
+                this.buffer_pos += min_read;
+                // toss to next iteration
+                return min_read;
+            }
         }
     }
     

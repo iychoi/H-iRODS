@@ -61,6 +61,13 @@ public class IrodsHdfsInputStream extends FSInputStream {
         this.pos = targetPos;
         this.raf.seek(targetPos, SeekWhenceType.SEEK_START);
     }
+    
+    @Override
+    public long skip(long l) throws IOException {
+        long newOff = Math.min(l, this.fileLength - this.pos);
+        seek(this.pos + newOff);
+        return newOff;
+    }
 
     @Override
     public synchronized boolean seekToNewSource(long targetPos) throws IOException {
