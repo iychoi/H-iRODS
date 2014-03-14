@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -33,7 +35,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
     private URI uri;
     private IRODSFileSystem irodsFS;
     private IRODSAccount irodsAccount;
-    private IRODSFileFactory irodsFileFactory;
+    //private IRODSFileFactory irodsFileFactory;
     private Path workingDir;
 
     public IrodsHdfsFileSystem() {
@@ -68,11 +70,11 @@ public class IrodsHdfsFileSystem extends FileSystem {
             if(!response.isSuccessful()) {
                 throw new IOException("Cannot authenticate to IRODS");
             }
-            try {
-                this.irodsFileFactory = getIRODSFileFactory(this.irodsFS, this.irodsAccount);
-            } catch (JargonException ex) {
-                throw new IOException(ex);
-            }
+            //try {
+            //    this.irodsFileFactory = getIRODSFileFactory(this.irodsFS, this.irodsAccount);
+            //} catch (JargonException ex) {
+            //    throw new IOException(ex);
+            //}
         }
         setConf(conf);
         this.uri = URI.create(uri.getScheme() + "://" + uri.getAuthority());
@@ -135,7 +137,15 @@ public class IrodsHdfsFileSystem extends FileSystem {
     }
     
     private static IRODSFileFactory getIRODSFileFactory(IRODSFileSystem fs, IRODSAccount account) throws JargonException {
-         return fs.getIRODSAccessObjectFactory().getIRODSFileFactory(account);
+         return fs.getIRODSFileFactory(account);
+    }
+    
+    private IRODSFileFactory getIRODSFileFactory() throws IOException {
+        try {
+            return this.irodsFS.getIRODSFileFactory(this.irodsAccount);
+        } catch (JargonException ex) {
+            throw new IOException(ex);
+        }
     }
     
     @Override
@@ -167,7 +177,8 @@ public class IrodsHdfsFileSystem extends FileSystem {
     
     private IRODSFile createIrodsPath(IRODSFile path, String name) throws IOException {
         try {
-            return this.irodsFileFactory.instanceIRODSFile(path.getPath(), name);
+            //return this.irodsFileFactory.instanceIRODSFile(path.getPath(), name);
+            return getIRODSFileFactory().instanceIRODSFile(path.getPath(), name);
         } catch (JargonException ex) {
             throw new IOException(ex);
         }
@@ -179,8 +190,8 @@ public class IrodsHdfsFileSystem extends FileSystem {
     
     private IRODSFile createIrodsPath(String path) throws IOException {
         try {
-            
-            return this.irodsFileFactory.instanceIRODSFile(path);
+            //return this.irodsFileFactory.instanceIRODSFile(path);
+            return getIRODSFileFactory().instanceIRODSFile(path);
         } catch (JargonException ex) {
             throw new IOException(ex);
         }
@@ -244,7 +255,8 @@ public class IrodsHdfsFileSystem extends FileSystem {
         }
         try {
             int bSize = Math.max(IrodsHdfsConfigUtil.getIrodsOutputBufferSize(getConf()), bufferSize);
-            return new FSDataOutputStream(new BufferedOutputStream(this.irodsFileFactory.instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
+            //return new FSDataOutputStream(new BufferedOutputStream(this.irodsFileFactory.instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
+            return new FSDataOutputStream(new BufferedOutputStream(getIRODSFileFactory().instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
         } catch (NoResourceDefinedException ex) {
             throw new IOException("Cannot get output stream from " + file);
         } catch (JargonException ex) {
@@ -263,7 +275,8 @@ public class IrodsHdfsFileSystem extends FileSystem {
         }
         
         int bSize = Math.max(IrodsHdfsConfigUtil.getIrodsOutputBufferSize(getConf()), bufferSize);
-        return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics), bSize));
+        //return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics), bSize));
+        return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, getIRODSFileFactory(), this.statistics), bSize));
     }
 
     @Override

@@ -19,7 +19,7 @@ public class IrodsHdfsConfigUtil {
     public static final String CONFIG_IRODS_DEFAULT_OUTPUT_BUFFER_SIZE = "fs.irods.output.buffer.size";
     
     public static final int IRODS_PORT_DEFAULT = 1247;
-    public static final int DEFAULT_BUFFER_SIZE = 100 * 1024;
+    public static final int DEFAULT_BUFFER_SIZE = 1024 * 100;
     
     public static String getIrodsHost(Configuration conf) {
         return conf.get(CONFIG_IRODS_HOST);
