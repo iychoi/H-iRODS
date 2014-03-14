@@ -272,7 +272,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
             throw new IOException("Path " + path + " is a directory.");
         }
         
-        int bSize = Math.max(IrodsHdfsConfigUtil.getIrodsOutputBufferSize(getConf()), bufferSize);
+        int bSize = Math.max(IrodsHdfsConfigUtil.getIrodsInputBufferSize(getConf()), bufferSize);
         //return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics), bSize));
         return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, getIRODSFileFactory(), this.statistics), bSize));
     }
