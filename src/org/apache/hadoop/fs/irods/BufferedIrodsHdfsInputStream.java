@@ -3,7 +3,6 @@ package org.apache.hadoop.fs.irods;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSInputStream;
 import org.apache.hadoop.fs.irods.util.IrodsHdfsConfigUtil;
 
@@ -51,7 +50,18 @@ public class BufferedIrodsHdfsInputStream extends FSInputStream {
     
     @Override
     public long skip(long l) throws IOException {
-        seek(this.buffer_start_pos + this.buffer_pos + l);
+        if(l <= 0) {
+            return 0;
+        }
+        
+        if(this.buffer_pos + l <= this.buffer_end) {
+            this.buffer_pos += l;
+            return l;
+        }
+    
+        long newlen = Math.min(l, this.is.getSize() - this.buffer_start_pos - this.buffer_pos);
+        
+        seek(this.buffer_start_pos + this.buffer_pos + newlen);
         return l;
     }
     
