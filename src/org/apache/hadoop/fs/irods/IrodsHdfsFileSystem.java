@@ -1,7 +1,7 @@
 package org.apache.hadoop.fs.irods;
 
 import java.io.BufferedOutputStream;
-import org.apache.hadoop.fs.irods.util.IrodsHdfsConfigUtil;
+import org.apache.hadoop.fs.irods.util.IrodsHdfsConfigUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
@@ -83,13 +83,13 @@ public class IrodsHdfsFileSystem extends FileSystem {
         IRODSAccount account = null;
         
         try {
-            String host = IrodsHdfsConfigUtil.getIrodsHost(conf);
-            int port = IrodsHdfsConfigUtil.getIrodsPort(conf);
-            String zone = IrodsHdfsConfigUtil.getIrodsZone(conf);
-            String user = IrodsHdfsConfigUtil.getIrodsUsername(conf);
-            String password = IrodsHdfsConfigUtil.getIrodsPassword(conf);
-            String home = IrodsHdfsConfigUtil.getIrodsHomeDirectory(conf);
-            String resource = IrodsHdfsConfigUtil.getIrodsDefaultStorageResource(conf);
+            String host = IrodsHdfsConfigUtils.getIrodsHost(conf);
+            int port = IrodsHdfsConfigUtils.getIrodsPort(conf);
+            String zone = IrodsHdfsConfigUtils.getIrodsZone(conf);
+            String user = IrodsHdfsConfigUtils.getIrodsUsername(conf);
+            String password = IrodsHdfsConfigUtils.getIrodsPassword(conf);
+            String home = IrodsHdfsConfigUtils.getIrodsHomeDirectory(conf);
+            String resource = IrodsHdfsConfigUtils.getIrodsDefaultStorageResource(conf);
             
             if(uri != null) {
                 String urihost = uri.getHost();
@@ -252,7 +252,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
             }
         }
         try {
-            int bSize = Math.max(IrodsHdfsConfigUtil.getIrodsOutputBufferSize(getConf()), bufferSize);
+            int bSize = Math.max(IrodsHdfsConfigUtils.getIrodsOutputBufferSize(getConf()), bufferSize);
             //return new FSDataOutputStream(new BufferedOutputStream(this.irodsFileFactory.instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
             return new FSDataOutputStream(new BufferedOutputStream(getIRODSFileFactory().instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
         } catch (NoResourceDefinedException ex) {
@@ -272,7 +272,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
             throw new IOException("Path " + path + " is a directory.");
         }
         
-        int bSize = Math.max(IrodsHdfsConfigUtil.getIrodsInputBufferSize(getConf()), bufferSize);
+        int bSize = Math.max(IrodsHdfsConfigUtils.getIrodsInputBufferSize(getConf()), bufferSize);
         //return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics), bSize));
         return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, getIRODSFileFactory(), this.statistics), bSize));
     }

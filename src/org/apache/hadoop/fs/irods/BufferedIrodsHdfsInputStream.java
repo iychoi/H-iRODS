@@ -4,7 +4,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FSInputStream;
-import org.apache.hadoop.fs.irods.util.IrodsHdfsConfigUtil;
+import org.apache.hadoop.fs.irods.util.IrodsHdfsConfigUtils;
 
 public class BufferedIrodsHdfsInputStream extends FSInputStream {
     
@@ -18,7 +18,7 @@ public class BufferedIrodsHdfsInputStream extends FSInputStream {
     private IrodsHdfsInputStream is;
     
     public BufferedIrodsHdfsInputStream(IrodsHdfsInputStream is) throws IOException {
-        init(is, IrodsHdfsConfigUtil.DEFAULT_BUFFER_SIZE);
+        init(is, IrodsHdfsConfigUtils.DEFAULT_BUFFER_SIZE);
     }
     
     public BufferedIrodsHdfsInputStream(IrodsHdfsInputStream is, int buffer_size) throws IOException {

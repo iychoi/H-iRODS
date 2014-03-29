@@ -4,9 +4,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 
-public class IrodsHdfsConfigUtil {
+public class IrodsHdfsConfigUtils {
     
-    public static final Log LOG = LogFactory.getLog(IrodsHdfsConfigUtil.class);
+    public static final Log LOG = LogFactory.getLog(IrodsHdfsConfigUtils.class);
     
     public static final String CONFIG_IRODS_HOST = "fs.irods.host";
     public static final String CONFIG_IRODS_PORT = "fs.irods.port";
