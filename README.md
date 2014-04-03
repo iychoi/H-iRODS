@@ -47,8 +47,8 @@ Restart the hadoop system then you could use "irods://irods_host/path/to/your/re
 Dependencies
 ------------
 
-iRODS-HDFS uses [Jargon](https://www.irods.org/index.php/Jargon) library to connect to iRODS system.
-Following library is used in iRODS-HDFS.
+H-iRODS uses [Jargon](https://www.irods.org/index.php/Jargon) library to connect to iRODS system.
+Following library is used currently.
 - jargon-core-3.3.2-20140124.145551-44.jar
 
 
