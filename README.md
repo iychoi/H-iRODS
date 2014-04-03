@@ -1,14 +1,14 @@
-iRODS-HDFS
+H-iRODS
 ==========
 
-iRODS-HDFS provides a Hadoop Distributed File System (HDFS) driver for iRODS.
+H-iRODS provides a Hadoop file system interface for iRODS.
 
 Setup on Hadoop
 ---------------
 
-Place iRODS-HDFS package and dependent libraries to classpath directory (or use -libjars option). So that Hadoop system can find these libraries when they are called.
+Place H-iRODS package and dependent libraries to classpath directory (or use -libjars option). So that Hadoop system can find these libraries when they are called.
 
-Register iRODS-HDFS to Hadoop configuration. We need to modify "core-site.xml" file which is Hadoop configuration file.
+Register H-iRODS to Hadoop configuration. We need to modify "core-site.xml" file which is Hadoop configuration file.
 
 ```
 	<property>
