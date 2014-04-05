@@ -13,9 +13,9 @@ import org.irods.jargon.core.pub.io.IRODSFile;
 import org.irods.jargon.core.pub.io.IRODSFileFactory;
 import org.irods.jargon.core.pub.io.IRODSRandomAccessFile;
 
-public class IrodsHdfsInputStream extends FSInputStream {
+public class HirodsInputStream extends FSInputStream {
 
-    private static final Log LOG = LogFactory.getLog(IrodsHdfsInputStream.class);
+    private static final Log LOG = LogFactory.getLog(HirodsInputStream.class);
     
     private IRODSFile path;
     private IRODSFileSystem irodsFS;
@@ -26,7 +26,7 @@ public class IrodsHdfsInputStream extends FSInputStream {
     private long pos = 0;
     private IRODSRandomAccessFile raf;
     
-    public IrodsHdfsInputStream(Configuration conf, IRODSFile path, IRODSFileSystem irodsFS, IRODSFileFactory fileFactory, FileSystem.Statistics stats) throws IOException {
+    public HirodsInputStream(Configuration conf, IRODSFile path, IRODSFileSystem irodsFS, IRODSFileFactory fileFactory, FileSystem.Statistics stats) throws IOException {
         this.path = path;
         this.irodsFS = irodsFS;
         this.fileFactory = fileFactory;

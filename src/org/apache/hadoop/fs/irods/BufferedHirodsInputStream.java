@@ -4,28 +4,28 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FSInputStream;
-import org.apache.hadoop.fs.irods.util.IrodsHdfsConfigUtils;
+import org.apache.hadoop.fs.irods.util.HirodsConfigUtils;
 
-public class BufferedIrodsHdfsInputStream extends FSInputStream {
+public class BufferedHirodsInputStream extends FSInputStream {
     
-    private static final Log LOG = LogFactory.getLog(BufferedIrodsHdfsInputStream.class);
+    private static final Log LOG = LogFactory.getLog(BufferedHirodsInputStream.class);
     
     private byte[] buffer;
     private int buffer_end = 0;
     private int buffer_pos = 0;
     private long buffer_start_pos = 0;
     private int buffer_size = 0;
-    private IrodsHdfsInputStream is;
+    private HirodsInputStream is;
     
-    public BufferedIrodsHdfsInputStream(IrodsHdfsInputStream is) throws IOException {
-        init(is, IrodsHdfsConfigUtils.DEFAULT_BUFFER_SIZE);
+    public BufferedHirodsInputStream(HirodsInputStream is) throws IOException {
+        init(is, HirodsConfigUtils.DEFAULT_BUFFER_SIZE);
     }
     
-    public BufferedIrodsHdfsInputStream(IrodsHdfsInputStream is, int buffer_size) throws IOException {
+    public BufferedHirodsInputStream(HirodsInputStream is, int buffer_size) throws IOException {
         init(is, buffer_size);
     }
     
-    private void init(IrodsHdfsInputStream is, int buffer_size) throws IOException {
+    private void init(HirodsInputStream is, int buffer_size) throws IOException {
         this.is = is;
         this.buffer_size = buffer_size;
         this.buffer = new byte[this.buffer_size];
