@@ -26,9 +26,9 @@ import org.irods.jargon.core.pub.IRODSFileSystem;
 import org.irods.jargon.core.pub.io.IRODSFile;
 import org.irods.jargon.core.pub.io.IRODSFileFactory;
 
-public class IrodsHdfsFileSystem extends FileSystem {
+public class HirodsFileSystem extends FileSystem {
 
-    private static final Log LOG = LogFactory.getLog(IrodsHdfsFileSystem.class);
+    private static final Log LOG = LogFactory.getLog(HirodsFileSystem.class);
     
     private URI uri;
     private IRODSFileSystem irodsFS;
@@ -36,7 +36,7 @@ public class IrodsHdfsFileSystem extends FileSystem {
     //private IRODSFileFactory irodsFileFactory;
     private Path workingDir;
 
-    public IrodsHdfsFileSystem() {
+    public HirodsFileSystem() {
     }
 
     @Override
@@ -273,7 +273,6 @@ public class IrodsHdfsFileSystem extends FileSystem {
         }
         
         int bSize = Math.max(HirodsConfigUtils.getIrodsInputBufferSize(getConf()), bufferSize);
-        //return new FSDataInputStream(new BufferedIrodsHdfsInputStream(new IrodsHdfsInputStream(getConf(), ipath, this.irodsFS, this.irodsFileFactory, this.statistics), bSize));
         return new FSDataInputStream(new BufferedHirodsInputStream(new HirodsInputStream(getConf(), ipath, this.irodsFS, getIRODSFileFactory(), this.statistics), bSize));
     }
 
