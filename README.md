@@ -13,7 +13,7 @@ Register H-iRODS to Hadoop configuration. We need to modify "core-site.xml" file
 ```
 	<property>
 		<name>fs.irods.impl</name>
-		<value>org.apache.hadoop.fs.irods.IrodsHdfsFileSystem</value>
+		<value>org.apache.hadoop.fs.irods.HirodsFileSystem</value>
 		<description>The FileSystem for irods:// uris.</description>
 	</property>
 	<property>
