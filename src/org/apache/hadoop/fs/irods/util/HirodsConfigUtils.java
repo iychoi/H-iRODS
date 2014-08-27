@@ -13,8 +13,6 @@ public class HirodsConfigUtils {
     public static final String CONFIG_IRODS_ZONE = "fs.irods.zone";
     public static final String CONFIG_IRODS_USERNAME = "fs.irods.account.username";
     public static final String CONFIG_IRODS_PASSWORD = "fs.irods.account.password";
-    public static final String CONFIG_IRODS_HOME_DIRECTORY = "fs.irods.account.homedir";
-    public static final String CONFIG_IRODS_DEFAULT_STORAGE_RESOURCE = "fs.irods.account.resource";
     public static final String CONFIG_IRODS_INPUT_BUFFER_SIZE = "fs.irods.input.buffer.size";
     public static final String CONFIG_IRODS_OUTPUT_BUFFER_SIZE = "fs.irods.output.buffer.size";
     
@@ -59,30 +57,6 @@ public class HirodsConfigUtils {
     
     public static void setIrodsPassword(Configuration conf, String password) {
         conf.set(CONFIG_IRODS_PASSWORD, password);
-    }
-    
-    public static String getIrodsHomeDirectory(Configuration conf) {
-        return conf.get(CONFIG_IRODS_HOME_DIRECTORY, getDefaultHomeDir(conf));
-    }
-    
-    public static void setIrodsHomeDirectory(Configuration conf, String homedir) {
-        conf.set(CONFIG_IRODS_HOME_DIRECTORY, homedir);
-    }
-    
-    private static String getDefaultHomeDir(Configuration conf) {
-        String zone = getIrodsZone(conf);
-        String name = getIrodsUsername(conf);
-        
-        String defaultdir = "/" + zone.trim() + "/home/" + name.trim();
-        return defaultdir;
-    }
-    
-    public static String getIrodsDefaultStorageResource(Configuration conf) {
-        return conf.get(CONFIG_IRODS_DEFAULT_STORAGE_RESOURCE, "");
-    }
-    
-    public static void setIrodsDefaultStorageResource(Configuration conf, String resource) {
-        conf.set(CONFIG_IRODS_DEFAULT_STORAGE_RESOURCE, resource);
     }
     
     public static int getIrodsInputBufferSize(Configuration conf) {

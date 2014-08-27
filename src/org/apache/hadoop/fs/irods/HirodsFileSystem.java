@@ -33,7 +33,6 @@ public class HirodsFileSystem extends FileSystem {
     private URI uri;
     private IRODSFileSystem irodsFS;
     private IRODSAccount irodsAccount;
-    //private IRODSFileFactory irodsFileFactory;
     private Path workingDir;
 
     public HirodsFileSystem() {
@@ -47,13 +46,64 @@ public class HirodsFileSystem extends FileSystem {
     @Override
     public void initialize(URI uri, Configuration conf) throws IOException {
         super.initialize(uri, conf);
+        
+        String host = uri.getHost();
+        if (host == null) {
+            host = HirodsConfigUtils.getIrodsHost(conf);
+        }
+        if (host == null) {
+           throw new IOException("invalid host specified"); 
+        }
+        HirodsConfigUtils.setIrodsHost(conf, host);
+        
+        int port = uri.getPort();
+        if (port == -1) {
+            port = HirodsConfigUtils.getIrodsPort(conf);
+        }
+        HirodsConfigUtils.setIrodsPort(conf, port);
+        
+        String userAndPass = uri.getUserInfo();
+        if (userAndPass == null) {
+            String user = HirodsConfigUtils.getIrodsUsername(conf);
+            String pass = HirodsConfigUtils.getIrodsPassword(conf);
+            
+            if(user == null || pass == null) {
+                throw new IOException("invalid user and password specified"); 
+            }
+            
+            userAndPass = HirodsConfigUtils.getIrodsUsername(conf) + ":" + HirodsConfigUtils.getIrodsPassword(conf);
+        }
+        
+        String[] userAndPassArr = userAndPass.split(":");
+        String user = null;
+        String password = null;
+        if(userAndPassArr.length > 1) {
+            user = userAndPassArr[0];
+            HirodsConfigUtils.setIrodsUsername(conf, user);
+            password = userAndPassArr[1];
+            HirodsConfigUtils.setIrodsPassword(conf, password);
+        }
+        
+        String zone = null;
+        String[] dirs = uri.getPath().split("/");
+        if(dirs.length >= 1) {
+            zone = dirs[0];
+            if(zone == null || zone.equals("")) {
+                zone = dirs[1];
+            }
+        }
+        if(zone == null) {
+            throw new IOException("invalid zone specified"); 
+        }
+        HirodsConfigUtils.setIrodsZone(conf, zone);
+        
         if (this.irodsFS == null) {
             try {
                 this.irodsFS = IRODSFileSystem.instance();
             } catch (JargonException ex) {
                 throw new IOException(ex);
             }
-            this.irodsAccount = createIRODSAccount(uri, conf);
+            this.irodsAccount = createIRODSAccount(host, port, zone, user, password);
             
             AuthResponse response;
             try {
@@ -68,54 +118,28 @@ public class HirodsFileSystem extends FileSystem {
             if(!response.isSuccessful()) {
                 throw new IOException("Cannot authenticate to IRODS");
             }
-            //try {
-            //    this.irodsFileFactory = getIRODSFileFactory(this.irodsFS, this.irodsAccount);
-            //} catch (JargonException ex) {
-            //    throw new IOException(ex);
-            //}
         }
+        
         setConf(conf);
-        this.uri = URI.create(uri.getScheme() + "://" + uri.getAuthority());
+        this.uri = uri;
         this.workingDir = new Path(this.irodsAccount.getHomeDirectory()).makeQualified(this);
     }
     
-    private static IRODSAccount createIRODSAccount(URI uri, Configuration conf) throws IOException {
+    private static String makeDefaultHome(String zone) {
+        String defaultdir = "/" + zone.trim();
+        return defaultdir;
+    }
+    
+    private static String makeDefaultStorageResource() {
+        return "";
+    }
+    
+    private static IRODSAccount createIRODSAccount(String host, int port, String zone, String user, String password) throws IOException {
         IRODSAccount account = null;
+        String home = makeDefaultHome(zone);
+        String resource = makeDefaultStorageResource();
         
         try {
-            String host = HirodsConfigUtils.getIrodsHost(conf);
-            int port = HirodsConfigUtils.getIrodsPort(conf);
-            String zone = HirodsConfigUtils.getIrodsZone(conf);
-            String user = HirodsConfigUtils.getIrodsUsername(conf);
-            String password = HirodsConfigUtils.getIrodsPassword(conf);
-            String home = HirodsConfigUtils.getIrodsHomeDirectory(conf);
-            String resource = HirodsConfigUtils.getIrodsDefaultStorageResource(conf);
-            
-            if(uri != null) {
-                String urihost = uri.getHost();
-                if(urihost != null && !urihost.isEmpty()) {
-                    host = urihost;
-                }
-
-                int uriport = uri.getPort();
-                if(uriport > 0) {
-                    port = uriport;
-                }
-
-                String uriuserinfo = uri.getUserInfo();
-                if(uriuserinfo != null && !uriuserinfo.isEmpty()) {
-                    int i = uriuserinfo.indexOf(':');
-                    if (i >= 0) {
-                        user = uriuserinfo.substring(0,i);
-                        password = uriuserinfo.substring(i+1);
-                    } else {
-                        user = uriuserinfo;
-                    }
-                }
-            }
-
-            account = IRODSAccount.instance(host, port, user, password, home, zone, resource);
-            
             //LOG.info("IRODS Account Info - host : " + host);
             //LOG.info("IRODS Account Info - port : " + port);
             //LOG.info("IRODS Account Info - zone : " + zone);
@@ -124,6 +148,7 @@ public class HirodsFileSystem extends FileSystem {
             //LOG.info("IRODS Account Info - home : " + home);
             //LOG.info("IRODS Account Info - resource : " + resource);
             
+            account = IRODSAccount.instance(host, port, user, password, home, zone, resource);
             return account;
         } catch (JargonException ex) {
             throw new IOException(ex);
@@ -132,10 +157,6 @@ public class HirodsFileSystem extends FileSystem {
     
     private static AuthResponse connectIRODS(IRODSFileSystem fs, IRODSAccount account) throws AuthenticationException, JargonException {
         return fs.getIRODSAccessObjectFactory().authenticateIRODSAccount(account);
-    }
-    
-    private static IRODSFileFactory getIRODSFileFactory(IRODSFileSystem fs, IRODSAccount account) throws JargonException {
-         return fs.getIRODSFileFactory(account);
     }
     
     private IRODSFileFactory getIRODSFileFactory() throws IOException {
@@ -175,7 +196,6 @@ public class HirodsFileSystem extends FileSystem {
     
     private IRODSFile createIrodsPath(IRODSFile path, String name) throws IOException {
         try {
-            //return this.irodsFileFactory.instanceIRODSFile(path.getPath(), name);
             return getIRODSFileFactory().instanceIRODSFile(path.getPath(), name);
         } catch (JargonException ex) {
             throw new IOException(ex);
@@ -188,7 +208,6 @@ public class HirodsFileSystem extends FileSystem {
     
     private IRODSFile createIrodsPath(String path) throws IOException {
         try {
-            //return this.irodsFileFactory.instanceIRODSFile(path);
             return getIRODSFileFactory().instanceIRODSFile(path);
         } catch (JargonException ex) {
             throw new IOException(ex);
@@ -230,6 +249,7 @@ public class HirodsFileSystem extends FileSystem {
     /**
      * This optional operation is not yet supported.
      */
+    @Override
     public FSDataOutputStream append(Path f, int bufferSize, Progressable progress) throws IOException {
         throw new IOException("Not supported");
     }
