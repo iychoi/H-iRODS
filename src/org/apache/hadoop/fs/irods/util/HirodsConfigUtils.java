@@ -15,12 +15,15 @@ public class HirodsConfigUtils {
     public static final String CONFIG_IRODS_PASSWORD = "fs.irods.account.password";
     public static final String CONFIG_IRODS_INPUT_BUFFER_SIZE = "fs.irods.input.buffer.size";
     public static final String CONFIG_IRODS_OUTPUT_BUFFER_SIZE = "fs.irods.output.buffer.size";
+    public static final String CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS = "fs.irods.output.hdfs_filebuffer.enabled";
+    public static final String CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS_PATH = "fs.irods.output.hdfs_filebuffer.dir";
     
-    public static final int IRODS_PORT_DEFAULT = 1247;
+    public static final int DEFAULT_IRODS_PORT = 1247;
     public static final int DEFAULT_BUFFER_SIZE = 1024 * 100;
+    public static final String DEFAULT_OUTPUT_BUFFERED_IN_HDFS_PATH = "hirods_temp/";
     
     public static String getIrodsHost(Configuration conf) {
-        return conf.get(CONFIG_IRODS_HOST);
+        return conf.get(CONFIG_IRODS_HOST, null);
     }
     
     public static void setIrodsHost(Configuration conf, String host) {
@@ -28,7 +31,7 @@ public class HirodsConfigUtils {
     }
     
     public static int getIrodsPort(Configuration conf) {
-        return conf.getInt(CONFIG_IRODS_PORT, IRODS_PORT_DEFAULT);
+        return conf.getInt(CONFIG_IRODS_PORT, DEFAULT_IRODS_PORT);
     }
     
     public static void setIrodsPort(Configuration conf, int port) {
@@ -36,7 +39,7 @@ public class HirodsConfigUtils {
     }
     
     public static String getIrodsZone(Configuration conf) {
-        return conf.get(CONFIG_IRODS_ZONE);
+        return conf.get(CONFIG_IRODS_ZONE, null);
     }
     
     public static void setIrodsZone(Configuration conf, String zone) {
@@ -44,7 +47,7 @@ public class HirodsConfigUtils {
     }
     
     public static String getIrodsUsername(Configuration conf) {
-        return conf.get(CONFIG_IRODS_USERNAME);
+        return conf.get(CONFIG_IRODS_USERNAME, null);
     }
     
     public static void setIrodsUsername(Configuration conf, String username) {
@@ -52,7 +55,7 @@ public class HirodsConfigUtils {
     }
     
     public static String getIrodsPassword(Configuration conf) {
-        return conf.get(CONFIG_IRODS_PASSWORD);
+        return conf.get(CONFIG_IRODS_PASSWORD, null);
     }
     
     public static void setIrodsPassword(Configuration conf, String password) {
@@ -73,5 +76,21 @@ public class HirodsConfigUtils {
     
     public static void setIrodsOutputBufferSize(Configuration conf, int buffer_size) {
         conf.setInt(CONFIG_IRODS_OUTPUT_BUFFER_SIZE, buffer_size);
+    }
+    
+    public static boolean getIrodsOutputBufferedInHDFS(Configuration conf) {
+        return conf.getBoolean(CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS, true);
+    }
+    
+    public static void setIrodsOutputBufferedInHDFS(Configuration conf, boolean doBuffer) {
+        conf.setBoolean(CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS, doBuffer);
+    }
+    
+    public static String getIrodsOutputBufferedInHDFSPath(Configuration conf) {
+        return conf.get(CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS_PATH, DEFAULT_OUTPUT_BUFFERED_IN_HDFS_PATH);
+    }
+    
+    public static void setIrodsOutputBufferedInHDFSPath(Configuration conf, String path) {
+        conf.set(CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS_PATH, path);
     }
 }

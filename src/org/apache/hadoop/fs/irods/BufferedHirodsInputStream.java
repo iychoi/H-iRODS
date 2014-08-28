@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FSInputStream;
 import org.apache.hadoop.fs.irods.util.HirodsConfigUtils;
 
+@Deprecated
 public class BufferedHirodsInputStream extends FSInputStream {
     
     private static final Log LOG = LogFactory.getLog(BufferedHirodsInputStream.class);
