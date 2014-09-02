@@ -1,8 +1,8 @@
-package org.apache.hadoop.fs.irods;
+package edu.arizona.cs.hadoop.fs.irods;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import org.apache.hadoop.fs.irods.util.HirodsConfigUtils;
+import edu.arizona.cs.hadoop.fs.irods.util.HirodsConfigUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
@@ -299,9 +299,7 @@ public class HirodsFileSystem extends FileSystem {
             throw new IOException("Path " + path + " is a directory.");
         }
         int bSize = Math.max(HirodsConfigUtils.getIrodsInputBufferSize(getConf()), bufferSize);
-        // BufferedHirodsInputStream is deprecated as it's same as bufferedInputStream
-        //return new FSDataInputStream(new BufferedHirodsInputStream(new HirodsInputStream(getConf(), ipath, this.irodsFS, getIRODSFileFactory(), this.statistics), bSize));
-        return new FSDataInputStream(new BufferedInputStream(new HirodsInputStream(getConf(), ipath, this.irodsFS, getIRODSFileFactory(), this.statistics), bSize));
+        return new FSDataInputStream(new HirodsBufferedInputStream(new HirodsInputStream(getConf(), ipath, this.irodsFS, getIRODSFileFactory(), this.statistics), bSize));
     }
 
     @Override

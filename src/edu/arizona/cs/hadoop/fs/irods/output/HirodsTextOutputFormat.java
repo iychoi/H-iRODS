@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hadoop.fs.irods.output;
+package edu.arizona.cs.hadoop.fs.irods.output;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

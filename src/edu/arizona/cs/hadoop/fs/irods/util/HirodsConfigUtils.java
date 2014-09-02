@@ -1,4 +1,4 @@
-package org.apache.hadoop.fs.irods.util;
+package edu.arizona.cs.hadoop.fs.irods.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

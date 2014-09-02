@@ -1,9 +1,9 @@
-package org.apache.hadoop.fs.irods.output;
+package edu.arizona.cs.hadoop.fs.irods.output;
 
 import java.io.IOException;
 
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.irods.util.HirodsConfigUtils;
+import edu.arizona.cs.hadoop.fs.irods.util.HirodsConfigUtils;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.OutputCommitter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;

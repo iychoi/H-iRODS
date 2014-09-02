@@ -1,4 +1,4 @@
-package org.apache.hadoop.fs.irods.output;
+package edu.arizona.cs.hadoop.fs.irods.output;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,7 +9,7 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.irods.HirodsFileSystem;
+import edu.arizona.cs.hadoop.fs.irods.HirodsFileSystem;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.TaskAttemptID;

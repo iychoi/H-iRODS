@@ -1,4 +1,4 @@
-package org.apache.hadoop.fs.irods;
+package edu.arizona.cs.hadoop.fs.irods;
 
 import java.io.IOException;
 import org.apache.commons.logging.Log;
