@@ -279,19 +279,13 @@ public class HirodsFileSystem extends FileSystem {
         }
         
         int bSize = Math.max(HirodsConfigUtils.getIrodsOutputBufferSize(getConf()), bufferSize);
-        if(HirodsConfigUtils.getIrodsOutputBufferedInHDFS(getConf())) {
-            // buffer in HDFS
-            Path temp_path = new Path(HirodsConfigUtils.getIrodsOutputBufferedInHDFSPath(getConf()) + ipath.getName());
-            return new FSDataOutputStream(new FileBufferedHirodsOutputStream(getIRODSFileFactory(), ipath, temp_path, getConf(), bufferSize), this.statistics);
-        } else {
-            try {
-                //return new FSDataOutputStream(new BufferedOutputStream(this.irodsFileFactory.instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
-                return new FSDataOutputStream(new BufferedOutputStream(getIRODSFileFactory().instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
-            } catch (NoResourceDefinedException ex) {
-                throw new IOException("Cannot get output stream from " + file);
-            } catch (JargonException ex) {
-                throw new IOException(ex);
-            }
+        try {
+            //return new FSDataOutputStream(new BufferedOutputStream(this.irodsFileFactory.instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
+            return new FSDataOutputStream(new BufferedOutputStream(getIRODSFileFactory().instanceIRODSFileOutputStream(ipath), bSize), this.statistics);
+        } catch (NoResourceDefinedException ex) {
+            throw new IOException("Cannot get output stream from " + file);
+        } catch (JargonException ex) {
+            throw new IOException(ex);
         }
     }
     

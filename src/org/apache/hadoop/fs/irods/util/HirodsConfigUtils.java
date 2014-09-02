@@ -15,12 +15,11 @@ public class HirodsConfigUtils {
     public static final String CONFIG_IRODS_PASSWORD = "fs.irods.account.password";
     public static final String CONFIG_IRODS_INPUT_BUFFER_SIZE = "fs.irods.input.buffer.size";
     public static final String CONFIG_IRODS_OUTPUT_BUFFER_SIZE = "fs.irods.output.buffer.size";
-    public static final String CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS = "fs.irods.output.hdfs_filebuffer.enabled";
-    public static final String CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS_PATH = "fs.irods.output.hdfs_filebuffer.dir";
+    public static final String CONFIG_IRODS_OUTPUT_BUFFERED_PATH = "fs.irods.output.hdfs_filebuffer.dir";
     
     public static final int DEFAULT_IRODS_PORT = 1247;
     public static final int DEFAULT_BUFFER_SIZE = 1024 * 100;
-    public static final String DEFAULT_OUTPUT_BUFFERED_IN_HDFS_PATH = "hirods_temp/";
+    public static final String DEFAULT_OUTPUT_BUFFERED_PATH = "hirods_temp/";
     
     public static String getIrodsHost(Configuration conf) {
         return conf.get(CONFIG_IRODS_HOST, null);
@@ -78,19 +77,11 @@ public class HirodsConfigUtils {
         conf.setInt(CONFIG_IRODS_OUTPUT_BUFFER_SIZE, buffer_size);
     }
     
-    public static boolean getIrodsOutputBufferedInHDFS(Configuration conf) {
-        return conf.getBoolean(CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS, true);
+    public static String getIrodsOutputBufferedPath(Configuration conf) {
+        return conf.get(CONFIG_IRODS_OUTPUT_BUFFERED_PATH, DEFAULT_OUTPUT_BUFFERED_PATH);
     }
     
-    public static void setIrodsOutputBufferedInHDFS(Configuration conf, boolean doBuffer) {
-        conf.setBoolean(CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS, doBuffer);
-    }
-    
-    public static String getIrodsOutputBufferedInHDFSPath(Configuration conf) {
-        return conf.get(CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS_PATH, DEFAULT_OUTPUT_BUFFERED_IN_HDFS_PATH);
-    }
-    
-    public static void setIrodsOutputBufferedInHDFSPath(Configuration conf, String path) {
-        conf.set(CONFIG_IRODS_OUTPUT_BUFFERED_IN_HDFS_PATH, path);
+    public static void setIrodsOutputBufferedPath(Configuration conf, String path) {
+        conf.set(CONFIG_IRODS_OUTPUT_BUFFERED_PATH, path);
     }
 }
