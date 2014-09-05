@@ -19,6 +19,8 @@ package edu.arizona.cs.hadoop.fs.irods.output;
 
 import java.io.IOException;
 import java.util.Arrays;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
@@ -32,11 +34,12 @@ import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.ReflectionUtils;
 
 public class HirodsMapFileOutputFormat extends HirodsFileOutputFormat<WritableComparable<?>, Writable> {
 
+    private static final Log LOG = LogFactory.getLog(HirodsMapFileOutputFormat.class);
+    
     @Override
     public RecordWriter<WritableComparable<?>, Writable> getRecordWriter(TaskAttemptContext context) throws IOException {
         Configuration conf = context.getConfiguration();
@@ -44,7 +47,7 @@ public class HirodsMapFileOutputFormat extends HirodsFileOutputFormat<WritableCo
         CompressionType compressionType = CompressionType.NONE;
         if (getCompressOutput(context)) {
             // find the kind of compression to do
-            compressionType = SequenceFileOutputFormat.getOutputCompressionType(context);
+            compressionType = HirodsSequenceFileOutputFormat.getOutputCompressionType(context);
 
             // find the right codec
             Class<?> codecClass = getOutputCompressorClass(context, DefaultCodec.class);

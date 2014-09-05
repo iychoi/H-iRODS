@@ -39,8 +39,8 @@ import org.apache.hadoop.util.ReflectionUtils;
 
 public class HirodsSequenceFileAsBinaryOutputFormat extends HirodsSequenceFileOutputFormat<BytesWritable, BytesWritable> {
 
-    public static String KEY_CLASS = "mapreduce.output.seqbinaryoutputformat.key.class";
-    public static String VALUE_CLASS = "mapreduce.output.seqbinaryoutputformat.value.class";
+    public static String KEY_CLASS = "edu.arizona.cs.hadoop.fs.irods.mapreduce.output.seqbinaryoutputformat.key.class";
+    public static String VALUE_CLASS = "edu.arizona.cs.hadoop.fs.irods.mapreduce.output.seqbinaryoutputformat.value.class";
 
     /**
      * Inner class used for appendRaw

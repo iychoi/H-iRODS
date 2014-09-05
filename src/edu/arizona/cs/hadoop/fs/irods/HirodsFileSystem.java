@@ -1,6 +1,5 @@
 package edu.arizona.cs.hadoop.fs.irods;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import edu.arizona.cs.hadoop.fs.irods.util.HirodsConfigUtils;
 import java.io.FileNotFoundException;
@@ -47,7 +46,6 @@ public class HirodsFileSystem extends FileSystem {
     @Override
     public void initialize(URI uri, Configuration conf) throws IOException {
         super.initialize(uri, conf);
-        
         LOG.info("initializing uri for iRODS : " + uri.toString());
         
         String host = uri.getHost();

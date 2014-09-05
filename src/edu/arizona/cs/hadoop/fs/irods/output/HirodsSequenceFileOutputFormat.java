@@ -80,7 +80,7 @@ public class HirodsSequenceFileOutputFormat<K,V> extends HirodsFileOutputFormat<
      * defaulting to {@link CompressionType#RECORD}
      */
     public static CompressionType getOutputCompressionType(JobContext job) {
-        String val = job.getConfiguration().get("mapred.output.compression.type", CompressionType.RECORD.toString());
+        String val = job.getConfiguration().get("edu.arizona.cs.hadoop.fs.irods.mapred.output.compression.type", CompressionType.RECORD.toString());
         return CompressionType.valueOf(val);
     }
 
@@ -93,6 +93,6 @@ public class HirodsSequenceFileOutputFormat<K,V> extends HirodsFileOutputFormat<
      */
     public static void setOutputCompressionType(Job job, CompressionType style) {
         setCompressOutput(job, true);
-        job.getConfiguration().set("mapred.output.compression.type", style.toString());
+        job.getConfiguration().set("edu.arizona.cs.hadoop.fs.irods.mapred.output.compression.type", style.toString());
     }
 }
